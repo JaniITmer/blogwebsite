@@ -1,10 +1,15 @@
 package com.JaniITmer.webapp.controller;
 
+import com.JaniITmer.webapp.dto.LoginRequest;
 import com.JaniITmer.webapp.dto.RegisterRequest;
 import com.JaniITmer.webapp.service.AuthService;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -24,6 +29,19 @@ public class AuthController {
             return ResponseEntity.ok("User registered successfully");
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request) {
+        try {
+            String jwt = authService.login(request);   // át kell írni az AuthService-t is LoginRequest-re
+            return ResponseEntity.ok(Map.of("token", jwt));
+        } catch (BadCredentialsException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("Hibás felhasználónév vagy jelszó");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Bejelentkezési hiba");
         }
     }
 }

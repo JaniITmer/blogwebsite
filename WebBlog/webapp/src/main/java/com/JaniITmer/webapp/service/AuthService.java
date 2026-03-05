@@ -1,10 +1,16 @@
 package com.JaniITmer.webapp.service;
 
+import com.JaniITmer.webapp.dto.LoginRequest;
 import com.JaniITmer.webapp.dto.RegisterRequest;
 import com.JaniITmer.webapp.entity.Role;
 import com.JaniITmer.webapp.entity.User;
 import com.JaniITmer.webapp.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +21,8 @@ import java.util.Set;
 public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final AuthenticationManager authenticationManager;
+    private final JwtService jwtService;
 
     public void register(RegisterRequest request){
         if(userRepository.existsByUsername(request.getUsername())){
@@ -32,5 +40,15 @@ public class AuthService {
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setRoles(Set.of(Role.USER));
         userRepository.save(user);
+    }
+    public String login(LoginRequest request) {
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        request.getEmail(),
+                        request.getPassword()
+                )
+        );
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        return jwtService.generateToken(userDetails);
     }
 }
