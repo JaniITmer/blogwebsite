@@ -23,8 +23,8 @@ dependency-reduced-pom.xml
 buildNumber.properties
 .mvn/timing.properties
 
-
-
+#uploaded files
+uploads/
 
 # Spring Boot / Java specifikus
 *.log
@@ -68,11 +68,3 @@ replay_pid*
 
 
 
-
-
-# Ha frontend-et adsz hozzá (pl. React/Vite)
-node_modules/
-dist/
-npm-debug.log
-yarn-debug.log
-yarn-error.log

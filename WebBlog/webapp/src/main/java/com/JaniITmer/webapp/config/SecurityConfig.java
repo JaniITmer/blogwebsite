@@ -25,8 +25,8 @@ import java.util.List;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    // NINCS @RequiredArgsConstructor !!!
-    // NINCS field injection sem !!!
+
+
 
     @Bean
     public SecurityFilterChain securityFilterChain(
@@ -35,8 +35,8 @@ public class SecurityConfig {
             AuthenticationProvider authenticationProvider) throws Exception {
 
         http
-                .csrf(csrf -> csrf.disable())                           // legfontosabb változás
-                .cors(cors -> cors.configurationSource(request -> {     // CORS
+                .csrf(csrf -> csrf.disable())
+                .cors(cors -> cors.configurationSource(request -> {
                     CorsConfiguration config = new CorsConfiguration();
                     config.setAllowedOrigins(List.of("http://localhost:5173"));
                     config.setAllowedMethods(List.of("*"));
@@ -47,6 +47,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
+                        .requestMatchers("/api/posts").authenticated()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
@@ -74,8 +75,8 @@ public class SecurityConfig {
 
     @Bean
     public AuthenticationProvider authenticationProvider(
-            UserDetailsService userDetailsService,              // ← paraméterként jön
-            PasswordEncoder passwordEncoder) {                  // ← paraméterként jön
+            UserDetailsService userDetailsService,
+            PasswordEncoder passwordEncoder) {
 
         DaoAuthenticationProvider authProvider =
                 new DaoAuthenticationProvider(userDetailsService);
